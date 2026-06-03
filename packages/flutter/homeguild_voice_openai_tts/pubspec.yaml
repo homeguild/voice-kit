@@ -20,7 +20,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  homeguild_voice_kit: ^0.1.0
+  homeguild_voice_kit:
+    path: ../homeguild_voice_kit
   logging: ^1.2.0
   http: ^1.1.0
   audioplayers: ^5.2.1
