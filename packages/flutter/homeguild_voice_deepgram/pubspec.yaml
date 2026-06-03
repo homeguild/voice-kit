@@ -3,9 +3,9 @@ description: >
   Deepgram STT provider for homeguild_voice_kit. Real-time speech-to-text
   via WebSocket with multi-language support, VAD events, and keep-alive.
 version: 0.1.0
-homepage: https://github.com/homeguild-labs/voice-kit
-repository: https://github.com/homeguild-labs/voice-kit
-issue_tracker: https://github.com/homeguild-labs/voice-kit/issues
+homepage: https://www.homeguild.ai/labs
+repository: https://github.com/homeguild/voice-kit
+issue_tracker: https://github.com/homeguild/voice-kit/issues
 
 environment:
   sdk: ^3.5.0
