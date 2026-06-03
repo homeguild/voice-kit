@@ -6,16 +6,21 @@ version: 0.1.0
 homepage: https://www.homeguild.ai/labs
 repository: https://github.com/homeguild/voice-kit
 issue_tracker: https://github.com/homeguild/voice-kit/issues
+topics:
+  - voice
+  - tts
+  - openai
+  - speech
+  - ai
 
 environment:
   sdk: ^3.5.0
-  flutter: ^3.24.0
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  homeguild_voice_kit:
-    path: ../homeguild_voice_kit
+  homeguild_voice_kit: ^0.1.0
   logging: ^1.2.0
   http: ^1.1.0
   audioplayers: ^5.2.1
