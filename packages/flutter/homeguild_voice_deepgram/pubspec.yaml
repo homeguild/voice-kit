@@ -1,0 +1,29 @@
+name: homeguild_voice_deepgram
+description: >
+  Deepgram STT provider for homeguild_voice_kit. Real-time speech-to-text
+  via WebSocket with multi-language support, VAD events, and keep-alive.
+version: 0.1.0
+homepage: https://github.com/homeguild-labs/voice-kit
+repository: https://github.com/homeguild-labs/voice-kit
+issue_tracker: https://github.com/homeguild-labs/voice-kit/issues
+
+environment:
+  sdk: ^3.5.0
+  flutter: ^3.24.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  homeguild_voice_kit:
+    path: ../homeguild_voice_kit
+  logging: ^1.2.0
+  web_socket_channel: ^2.4.0
+  record: ^5.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+dependency_overrides:
+  record_linux: ^1.0.0

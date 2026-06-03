@@ -1,0 +1,26 @@
+name: homeguild_voice_openai_tts
+description: >
+  OpenAI TTS provider for homeguild_voice_kit. Natural-sounding text-to-speech
+  with streaming sentence queue, voice selection, and speed control.
+version: 0.1.0
+homepage: https://github.com/homeguild-labs/voice-kit
+repository: https://github.com/homeguild-labs/voice-kit
+issue_tracker: https://github.com/homeguild-labs/voice-kit/issues
+
+environment:
+  sdk: ^3.5.0
+  flutter: ^3.24.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  homeguild_voice_kit:
+    path: ../homeguild_voice_kit
+  logging: ^1.2.0
+  http: ^1.1.0
+  audioplayers: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

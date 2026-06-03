@@ -1,0 +1,13 @@
+name: homeguild_voice_kit_example
+description: Example app for homeguild_voice_kit
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ^3.24.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  homeguild_voice_kit:
+    path: ..

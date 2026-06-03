@@ -1,0 +1,22 @@
+name: homeguild_voice_kit
+description: >
+  Voice conversation orchestration for Flutter. Pluggable STT/TTS providers
+  with a complete state machine, sentence buffering, and ready-made widgets.
+version: 0.1.0
+homepage: https://github.com/homeguild-labs/voice-kit
+repository: https://github.com/homeguild-labs/voice-kit
+issue_tracker: https://github.com/homeguild-labs/voice-kit/issues
+
+environment:
+  sdk: ^3.5.0
+  flutter: ^3.24.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  logging: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
