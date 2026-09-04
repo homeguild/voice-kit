@@ -6,6 +6,12 @@ import '../src/conversation/message.dart';
 /// maps `viewId` → a native widget (docs/conversation-surface.md §7).
 typedef MessageViewBuilder = Widget Function(BuildContext context, MessageView view);
 
+/// An optional caption rendered under a message (timestamp, delivery state, …),
+/// aligned to the message's side. Return null to render none. Kept general: the
+/// kit doesn't know about "timestamps"; the host reads what it needs from the
+/// [Message] (e.g. `channelMeta['timeLabel']`).
+typedef MessageCaptionBuilder = Widget? Function(BuildContext context, Message message);
+
 /// Injectable styling so the stream wears the host's design system. Defaults are
 /// derived from the ambient [ThemeData]; a host overrides any field.
 class ConversationTheme {
@@ -72,6 +78,7 @@ class ConversationStream extends StatelessWidget {
     required this.messages,
     this.onAction,
     this.viewRegistry = const {},
+    this.captionBuilder,
     this.theme,
     this.controller,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -80,6 +87,7 @@ class ConversationStream extends StatelessWidget {
   final List<Message> messages;
   final void Function(Message message, MessageAction action)? onAction;
   final Map<String, MessageViewBuilder> viewRegistry;
+  final MessageCaptionBuilder? captionBuilder;
   final ConversationTheme? theme;
   final ScrollController? controller;
   final EdgeInsets padding;
@@ -91,12 +99,31 @@ class ConversationStream extends StatelessWidget {
       controller: controller,
       padding: padding,
       itemCount: messages.length,
-      itemBuilder: (context, i) => _MessageTile(
-        message: messages[i],
-        theme: t,
-        onAction: onAction,
-        viewRegistry: viewRegistry,
-      ),
+      itemBuilder: (context, i) {
+        final m = messages[i];
+        final tile = _MessageTile(
+          message: m, theme: t, onAction: onAction, viewRegistry: viewRegistry);
+        final caption = captionBuilder?.call(context, m);
+        if (caption == null) return tile;
+        // Caption aligns to the message's side (operator right, else left).
+        final right = m.author == MessageAuthor.operator;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            tile,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Align(
+                alignment: right ? Alignment.centerRight : Alignment.centerLeft,
+                child: DefaultTextStyle(
+                  style: TextStyle(color: t.systemText, fontSize: 11),
+                  child: caption,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
