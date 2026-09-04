@@ -26,3 +26,4 @@ export 'src/voice_conversation_manager.dart';
 export 'widgets/voice_input_button.dart';
 export 'widgets/voice_status_indicator.dart';
 export 'widgets/voice_transcript_display.dart';
+export 'widgets/conversation_stream.dart';
