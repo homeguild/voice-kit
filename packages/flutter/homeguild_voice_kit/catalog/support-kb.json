@@ -9,6 +9,8 @@
       "The agent can draft a customer reply, but it waits for your approval (the \"Draft reply · needs your yes\" card) — it is never sent on its own.",
       "The advisor speaks privately in-thread (\"Only you see this\") and can never be sent to the customer."
     ],
-    "screenshot": "test/goldens/weekend_callout.png"
+    "screenshot": "test/goldens/weekend_callout.png",
+    "route": "inbox",
+    "breadcrumb": "Inbox › a customer thread"
   }
 ]

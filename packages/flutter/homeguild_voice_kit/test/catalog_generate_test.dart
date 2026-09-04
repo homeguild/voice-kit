@@ -29,6 +29,8 @@ void main() {
         ..writeln('## ${s.title}')
         ..writeln('_${s.feature}_')
         ..writeln()
+        ..writeln('**Find it:** ${s.breadcrumb}  ·  `${s.route}`')
+        ..writeln()
         ..writeln('![${s.id}](../test/goldens/${s.golden})')
         ..writeln()
         ..writeln(s.narrative)
@@ -47,6 +49,10 @@ void main() {
         'narrative': s.narrative,
         'shows': s.shows,
         'screenshot': 'test/goldens/${s.golden}',
+        // The address the support agent navigates to for "take you there",
+        // plus the human path for spoken directions.
+        'route': s.route,
+        'breadcrumb': s.breadcrumb,
       });
     }
 

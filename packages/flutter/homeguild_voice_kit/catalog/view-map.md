@@ -5,6 +5,8 @@ _Generated from the scenario library. Each entry is a verified, screenshotted, d
 ## Weekend emergency callout
 _Inbox · approving an agent draft_
 
+**Find it:** Inbox › a customer thread  ·  `inbox`
+
 ![weekend_callout](../test/goldens/weekend_callout.png)
 
 A repeat customer texts asking about a weekend emergency callout. The conversation stays in one thread across text and a missed call. When things turn urgent, Nuntilo drafts a reply on your behalf and holds it for your approval — nothing goes to the customer until you say yes. Alongside it, privately, the advisor points out this person has reached out three times this week and suggests a personal call to close it.

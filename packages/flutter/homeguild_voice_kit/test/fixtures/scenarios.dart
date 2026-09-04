@@ -14,6 +14,8 @@ class Scenario {
     required this.feature,
     required this.narrative,
     required this.shows,
+    required this.route,
+    required this.breadcrumb,
     required this.messages,
   });
 
@@ -25,6 +27,16 @@ class Scenario {
 
   /// Where in the product this lives (surface · interaction).
   final String feature;
+
+  /// The canonical logical address of the surface this lives on — what the
+  /// agent navigates to for "take you there" (each port maps it to its own
+  /// navigation). Coarse addresses (sections) cover most support asks; entity
+  /// addresses (a specific thread) are added selectively.
+  final String route;
+
+  /// The human path to it — shown in docs ("you'll find this under …") and as
+  /// the agent's spoken directions.
+  final String breadcrumb;
 
   /// Human-readable description of the feature/interaction this captures.
   final String narrative;
@@ -64,6 +76,8 @@ class Scenarios {
       'The advisor speaks privately in-thread ("Only you see this") and can '
           'never be sent to the customer.',
     ],
+    route: 'inbox',
+    breadcrumb: 'Inbox › a customer thread',
     messages: [
       Message(
         id: 's1',
