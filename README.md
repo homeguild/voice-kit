@@ -4,6 +4,13 @@ Voice conversation orchestration for Flutter. Plug in any STT and TTS provider, 
 
 **Built by [HomeGuild Labs](https://www.homeguild.ai/labs)** — powering AI voice assistants for service professionals.
 
+> **Where this is going:** Voice Kit is growing from voice orchestration into
+> the full **agent conversation surface** — one stream carrying human messages,
+> agent replies (approval-gated), private advisor asides, inline assists, and
+> dynamic views, with voice as one modality. Two ports (Flutter + React), one
+> versioned protocol. See **[docs/conversation-surface.md](docs/conversation-surface.md)**
+> for the architecture + roadmap.
+
 ## Packages
 
 | Package | Description | pub.dev |
