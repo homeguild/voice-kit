@@ -5,24 +5,23 @@ import 'package:homeguild_voice_kit/homeguild_voice_kit.dart';
 
 import 'fixtures/scenarios.dart';
 
-/// Screen-level golden of the conversation surface. One capture, three uses:
-/// a visual-regression test (it gates), a catalog/view-map entry (the PNG under
-/// test/goldens/), and a design reference. The scenario data is deterministic,
-/// so the screenshot is stable enough to fail CI on.
+/// Screen-level goldens of the conversation surface, one per [Scenario]. One
+/// capture, many uses: a visual-regression gate, a catalog/view-map entry (the
+/// PNG under test/goldens/), and — with the scenario's narrative — a user-doc
+/// and agent-support entry (see catalog_generate_test.dart).
 ///
 /// Regenerate the images with:  flutter test --update-goldens
 void main() {
   setUpAll(() async => loadAppFonts());
 
-  testGoldens('conversation surface — weekend callout (pending draft + aside)',
-      (tester) async {
-    await tester.pumpWidgetBuilder(
-      Scaffold(
-        body: ConversationStream(messages: Scenarios.weekendCallout),
-      ),
-      wrapper: materialAppWrapper(theme: ThemeData.light(useMaterial3: true)),
-      surfaceSize: const Size(390, 844), // a phone
-    );
-    await screenMatchesGolden(tester, 'weekend_callout');
-  });
+  for (final s in Scenarios.all) {
+    testGoldens('conversation surface — ${s.title}', (tester) async {
+      await tester.pumpWidgetBuilder(
+        Scaffold(body: ConversationStream(messages: s.messages)),
+        wrapper: materialAppWrapper(theme: ThemeData.light(useMaterial3: true)),
+        surfaceSize: const Size(390, 844),
+      );
+      await screenMatchesGolden(tester, s.id);
+    });
+  }
 }
