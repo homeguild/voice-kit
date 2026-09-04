@@ -4,11 +4,15 @@ import 'package:homeguild_voice_kit/homeguild_voice_kit.dart';
 
 Widget _host(List<Message> messages,
         {void Function(Message, MessageAction)? onAction,
-        Map<String, MessageViewBuilder> views = const {}}) =>
+        Map<String, MessageViewBuilder> views = const {},
+        ConversationViewpoint viewpoint = ConversationViewpoint.contact}) =>
     MaterialApp(
       home: Scaffold(
         body: ConversationStream(
-            messages: messages, onAction: onAction, viewRegistry: views),
+            messages: messages,
+            onAction: onAction,
+            viewRegistry: views,
+            viewpoint: viewpoint),
       ),
     );
 
@@ -52,6 +56,34 @@ void main() {
     expect(find.text('ONLY YOU SEE THIS'), findsOneWidget);
     expect(find.text('Send'), findsNothing);
     expect(find.text('Dismiss'), findsOneWidget);
+  });
+
+  testWidgets(
+      'operator viewpoint: a sent agent reply is outbound (right, tagged AGENT)',
+      (tester) async {
+    final sent = Message(
+        id: '4',
+        author: MessageAuthor.agentPublic,
+        state: MessageState.sent,
+        channel: MessageChannel.sms,
+        text: 'Booked you for 3pm — see you then.');
+
+    // Operator's inbox: the agent spoke as the business → outbound, right side.
+    await tester
+        .pumpWidget(_host([sent], viewpoint: ConversationViewpoint.operator));
+    expect(find.text('AGENT'), findsOneWidget);
+    final center = tester.getCenter(find.text('Booked you for 3pm — see you then.'));
+    final width = tester.getSize(find.byType(ConversationStream)).width;
+    expect(center.dx, greaterThan(width / 2), reason: 'agent reply hugs the right');
+
+    // Contact viewpoint (talking to the agent): the agent is the other party →
+    // a left-aligned line, no outbound tag.
+    await tester
+        .pumpWidget(_host([sent], viewpoint: ConversationViewpoint.contact));
+    expect(find.text('AGENT'), findsNothing);
+    final leftCenter =
+        tester.getCenter(find.text('Booked you for 3pm — see you then.'));
+    expect(leftCenter.dx, lessThan(width / 2), reason: 'agent line hugs the left');
   });
 
   testWidgets('a directive view renders through the registry', (tester) async {

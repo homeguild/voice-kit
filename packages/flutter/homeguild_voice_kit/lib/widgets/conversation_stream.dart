@@ -12,6 +12,14 @@ typedef MessageViewBuilder = Widget Function(BuildContext context, MessageView v
 /// [Message] (e.g. `channelMeta['timeLabel']`).
 typedef MessageCaptionBuilder = Widget? Function(BuildContext context, Message message);
 
+/// Whose side the surface is rendered from — because it decides which side the
+/// **public agent** lands on. In an operator's inbox thread the agent's messages
+/// are OUTBOUND (the business replying to the contact → right). In a "talking to
+/// the agent" surface (the agent is the *other* party, e.g. the marketing chat)
+/// they render as the agent → left. Advisor asides and system lines are
+/// unaffected (always private/centered).
+enum ConversationViewpoint { contact, operator }
+
 /// Injectable styling so the stream wears the host's design system. Defaults are
 /// derived from the ambient [ThemeData]; a host overrides any field.
 class ConversationTheme {
@@ -20,6 +28,7 @@ class ConversationTheme {
     required this.contactText,
     required this.operatorBubble,
     required this.operatorText,
+    required this.agentBubble,
     required this.agentText,
     required this.advisorText,
     required this.systemText,
@@ -33,7 +42,13 @@ class ConversationTheme {
   final Color operatorBubble;
   final Color operatorText;
 
-  /// Agent speaking as the business (a sent public reply).
+  /// The bubble behind an agent-sent reply when it renders OUTBOUND (operator
+  /// viewpoint) — accented to mark it agent-authored, distinct from the
+  /// operator's own [operatorBubble].
+  final Color agentBubble;
+
+  /// Agent speaking as the business (a sent public reply) — text color, used for
+  /// the left-aligned agent line (contact viewpoint) and the outbound bubble.
   final Color agentText;
 
   /// The private advisor voice (asides) — visually unmistakable from anything
@@ -53,6 +68,7 @@ class ConversationTheme {
       contactText: cs.onSurface,
       operatorBubble: cs.primary,
       operatorText: cs.onPrimary,
+      agentBubble: cs.tertiaryContainer,
       agentText: cs.onSurface,
       advisorText: cs.tertiary,
       systemText: cs.onSurfaceVariant,
@@ -81,6 +97,7 @@ class ConversationStream extends StatelessWidget {
     this.captionBuilder,
     this.theme,
     this.controller,
+    this.viewpoint = ConversationViewpoint.contact,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 8),
   });
 
@@ -90,6 +107,12 @@ class ConversationStream extends StatelessWidget {
   final MessageCaptionBuilder? captionBuilder;
   final ConversationTheme? theme;
   final ScrollController? controller;
+
+  /// Whose side the surface renders from — decides which side the public agent
+  /// lands on (operator's inbox → agent is outbound/right; talking-to-the-agent
+  /// → agent is the other party/left). Defaults to [ConversationViewpoint.contact]
+  /// so existing hosts (marketing chat) are unaffected.
+  final ConversationViewpoint viewpoint;
   final EdgeInsets padding;
 
   @override
@@ -102,11 +125,18 @@ class ConversationStream extends StatelessWidget {
       itemBuilder: (context, i) {
         final m = messages[i];
         final tile = _MessageTile(
-          message: m, theme: t, onAction: onAction, viewRegistry: viewRegistry);
+          message: m,
+          theme: t,
+          onAction: onAction,
+          viewRegistry: viewRegistry,
+          viewpoint: viewpoint);
         final caption = captionBuilder?.call(context, m);
         if (caption == null) return tile;
-        // Caption aligns to the message's side (operator right, else left).
-        final right = m.author == MessageAuthor.operator;
+        // Caption aligns to the message's side (outbound right, else left). From
+        // the operator's viewpoint the public agent is outbound too.
+        final right = m.author == MessageAuthor.operator ||
+            (m.author == MessageAuthor.agentPublic &&
+                viewpoint == ConversationViewpoint.operator);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -134,12 +164,19 @@ class _MessageTile extends StatelessWidget {
     required this.theme,
     required this.onAction,
     required this.viewRegistry,
+    required this.viewpoint,
   });
 
   final Message message;
   final ConversationTheme theme;
   final void Function(Message, MessageAction)? onAction;
   final Map<String, MessageViewBuilder> viewRegistry;
+  final ConversationViewpoint viewpoint;
+
+  /// From the operator's inbox, a public-agent message is the business replying
+  /// to the contact — outbound, on the right. In a talking-to-the-agent surface
+  /// the agent is the other party — on the left.
+  bool get _agentIsOutbound => viewpoint == ConversationViewpoint.operator;
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +194,14 @@ class _MessageTile extends StatelessWidget {
       case MessageAuthor.operator:
         return _bubble(alignEnd: true, bg: theme.operatorBubble, fg: theme.operatorText);
       case MessageAuthor.agentPublic:
-        return message.state == MessageState.pendingApproval
-            ? _draftReply(context)
+        if (message.state == MessageState.pendingApproval) {
+          return _draftReply(context);
+        }
+        // A sent public reply. In the operator's inbox it's outbound (a bubble
+        // on the right, gold-accented to mark it agent-authored); in the
+        // talking-to-the-agent surface it's the agent's line on the left.
+        return _agentIsOutbound
+            ? _agentBubble()
             : _agentLine(theme.agentText, asBusiness: true);
       case MessageAuthor.agentAdvisor:
         return _advisorAside(context);
@@ -177,6 +220,37 @@ class _MessageTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
         child: Text(message.text!, style: (theme.baseTextStyle ?? const TextStyle()).copyWith(color: fg)),
+      ),
+    );
+  }
+
+  // ── agent speaking as the business, OUTBOUND (operator viewpoint) ──
+  // A right-aligned bubble like the operator's, but on the agent accent and
+  // tagged so it's unmistakably the agent's voice, not the operator's own.
+  Widget _agentBubble() {
+    if ((message.text ?? '').isEmpty) return const SizedBox.shrink();
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10, left: 48),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+        decoration: BoxDecoration(
+            color: theme.agentBubble, borderRadius: BorderRadius.circular(14)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('AGENT',
+                style: TextStyle(
+                    color: theme.agentText.withValues(alpha: 0.6),
+                    fontSize: 9,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600)),
+            const SizedBox(height: 2),
+            Text(message.text!,
+                style: (theme.baseTextStyle ?? const TextStyle())
+                    .copyWith(color: theme.agentText)),
+          ],
+        ),
       ),
     );
   }
@@ -226,11 +300,14 @@ class _MessageTile extends StatelessWidget {
   }
 
   // ── a public-agent reply awaiting the operator's yes (inline approval) ──
+  // Aligned to the side the agent's *sent* reply would land on, so approving it
+  // in place reads as "this becomes that outbound message".
   Widget _draftReply(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: _agentIsOutbound ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10, right: 16),
+        margin: EdgeInsets.only(
+            bottom: 10, right: _agentIsOutbound ? 0 : 16, left: _agentIsOutbound ? 16 : 0),
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
         decoration: BoxDecoration(
           color: theme.surface,
