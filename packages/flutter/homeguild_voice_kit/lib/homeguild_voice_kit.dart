@@ -16,6 +16,9 @@ export 'src/models/stt_result.dart';
 export 'src/models/voice_stream_chunk.dart';
 export 'src/models/voice_conversation_state.dart';
 
+// Conversation surface (docs/conversation-surface.md)
+export 'src/conversation/message.dart';
+
 // Orchestration
 export 'src/voice_conversation_manager.dart';
 
