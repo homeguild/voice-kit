@@ -73,6 +73,10 @@ enum MessageAction {
   speak,
   dismiss,
   openWith,
+
+  /// Navigate the app to a surface — "take you there" (§9). The message's
+  /// deeplink path (in [Message.channelMeta] `'route'`) is resolved by the host.
+  takeMeThere,
 }
 
 /// A directive view carried inline by a message — dynamic UI resolved by the

@@ -140,8 +140,10 @@ baseline set:
 - **`reword` / `shorten` / `rephrase`** — assist transforms on the operator's
   own draft.
 - **`send`** — transmit an `operator`/approved message.
-- **`speak`** — voice this message aloud (the voice modality, §9).
+- **`speak`** — voice this message aloud (the voice modality, §10).
 - **`dismiss`** — drop an aside/suggestion.
+- **`takeMeThere`** — navigate the app to a surface (§9). The message's
+  deeplink path is resolved by the host — "take you there."
 
 Hosts may add actions; the kit renders declared actions and routes their results
 through the same streaming envelope (§6). Refinement is a loop: *refine → new
@@ -253,7 +255,26 @@ directive views, voice — is reused untouched. *It builds on itself.*
 
 ---
 
-## 9. Voice as a modality
+## 9. Navigation & deeplinks
+
+Where a message points the user is an **address**, and the address is a
+canonical **deeplink path** — scheme/host-agnostic (`/inbox/thread/{id}`), each
+port prepending its own (web URL, iOS/Android universal link, Electron scheme).
+This is the one primitive behind "take you there": a `takeMeThere` action (or a
+`navigate` directive, a sibling of `open_with`) carries the path; the host
+resolves it through the router it already has. Because the address is a plain
+link, the agent can hand it over **from anywhere** — in-app, a push, an email,
+an SMS — not only when embedded.
+
+The kit owns the action/directive + the path convention. **The host owns
+resolution:** reconstructing state from params (fine routes), and the gate
+(not-logged-in → continue; not-on-plan → *upsell*; unauthorized). The deeplink
+table is the host's surface registry — not a separate thing. Same practice
+across the product: see `docs/scenario-driven-development.md` (§4).
+
+---
+
+## 10. Voice as a modality
 
 The existing pieces — `STTProvider`, `TTSProvider`, `VoiceConversationManager`,
 the voice widgets — are re-seated as **one input/output modality of the stream**:
@@ -269,7 +290,7 @@ can be driven by and rendered to, rather than a separate product.
 
 ---
 
-## 10. Repo shape & the versioning discipline
+## 11. Repo shape & the versioning discipline
 
 ```
 voice-kit/
@@ -297,7 +318,7 @@ specifics live in adapters, providers, custom views, and theme — never the cor
 
 ---
 
-## 11. Roadmap (supersedes the README stub)
+## 12. Roadmap (supersedes the README stub)
 
 **Now — foundation**
 - [ ] Extract the message model + provenance/state + approval rules into the
@@ -324,7 +345,7 @@ specifics live in adapters, providers, custom views, and theme — never the cor
 
 ---
 
-## 12. Open decisions
+## 13. Open decisions
 
 - **Naming.** The scope now exceeds "voice." Does the project stay **Voice
   Kit** (voice as its origin + a headline modality) or become **Conversation

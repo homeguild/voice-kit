@@ -281,5 +281,6 @@ class _MessageTile extends StatelessWidget {
         MessageAction.speak => 'Say it',
         MessageAction.dismiss => 'Dismiss',
         MessageAction.openWith => 'Open with…',
+        MessageAction.takeMeThere => 'Take me there',
       };
 }
