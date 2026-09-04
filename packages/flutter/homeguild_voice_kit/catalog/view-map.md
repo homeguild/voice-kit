@@ -5,7 +5,7 @@ _Generated from the scenario library. Each entry is a verified, screenshotted, d
 ## Weekend emergency callout
 _Inbox · approving an agent draft_
 
-**Find it:** Inbox › a customer thread  ·  `inbox`
+**Find it:** Inbox › a customer thread  ·  `/inbox`
 
 ![weekend_callout](../test/goldens/weekend_callout.png)
 

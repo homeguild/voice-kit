@@ -28,10 +28,12 @@ class Scenario {
   /// Where in the product this lives (surface · interaction).
   final String feature;
 
-  /// The canonical logical address of the surface this lives on — what the
-  /// agent navigates to for "take you there" (each port maps it to its own
-  /// navigation). Coarse addresses (sections) cover most support asks; entity
-  /// addresses (a specific thread) are added selectively.
+  /// The canonical **deeplink path** of the surface this lives on — scheme/host-
+  /// agnostic (`/inbox`, `/inbox/thread/{id}`, `/settings/agent`). Each platform
+  /// prepends its own (web URL, iOS/Android universal link, Electron scheme), so
+  /// "take you there" is just "open this link" — and the agent can hand it over
+  /// from anywhere (in-app, push, email). Coarse paths (sections) cover most
+  /// support asks; entity paths with params are added selectively.
   final String route;
 
   /// The human path to it — shown in docs ("you'll find this under …") and as
@@ -76,7 +78,7 @@ class Scenarios {
       'The advisor speaks privately in-thread ("Only you see this") and can '
           'never be sent to the customer.',
     ],
-    route: 'inbox',
+    route: '/inbox',
     breadcrumb: 'Inbox › a customer thread',
     messages: [
       Message(

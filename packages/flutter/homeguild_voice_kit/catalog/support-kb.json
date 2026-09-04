@@ -10,7 +10,7 @@
       "The advisor speaks privately in-thread (\"Only you see this\") and can never be sent to the customer."
     ],
     "screenshot": "test/goldens/weekend_callout.png",
-    "route": "inbox",
+    "route": "/inbox",
     "breadcrumb": "Inbox › a customer thread"
   }
 ]
