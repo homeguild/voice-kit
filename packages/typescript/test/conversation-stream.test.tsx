@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { ConversationStream } from "../src/conversation-stream.js";
-import { Message } from "../src/message.js";
+import { ConversationStream } from "../src/conversation-stream";
+import { Message } from "../src/message";
 
 /**
  * Render conformance: the React stream must surface the same taxonomy signals as

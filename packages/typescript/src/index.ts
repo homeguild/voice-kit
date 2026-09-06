@@ -8,7 +8,7 @@ export {
   type MessageAction,
   type MessageView,
   type MessageProps,
-} from "./message.js";
+} from "./message";
 
 export {
   ConversationStream,
@@ -18,5 +18,5 @@ export {
   type ConversationViewpoint,
   type MessageViewBuilder,
   type MessageCaptionBuilder,
-} from "./conversation-stream.js";
+} from "./conversation-stream";
 

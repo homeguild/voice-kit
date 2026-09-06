@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Message } from "../src/message.js";
+import { Message } from "../src/message";
 
 /**
  * The trust invariants, ported 1:1 from the Flutter `message_test.dart` — the

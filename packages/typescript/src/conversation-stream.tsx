@@ -4,7 +4,7 @@ import {
   type Message,
   type MessageAction,
   type MessageView,
-} from "./message.js";
+} from "./message";
 
 /**
  * The conversation surface — a stream of {@link Message}s rendered by the
