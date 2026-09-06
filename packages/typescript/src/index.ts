@@ -9,3 +9,14 @@ export {
   type MessageView,
   type MessageProps,
 } from "./message.js";
+
+export {
+  ConversationStream,
+  defaultTheme,
+  type ConversationStreamProps,
+  type ConversationTheme,
+  type ConversationViewpoint,
+  type MessageViewBuilder,
+  type MessageCaptionBuilder,
+} from "./conversation-stream.js";
+
