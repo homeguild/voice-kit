@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:homeguild_voice_kit/homeguild_voice_kit.dart';
 
 /// A described, deterministic conversation scenario — the reusable core of the
@@ -6,7 +9,11 @@ import 'package:homeguild_voice_kit/homeguild_voice_kit.dart';
 ///   • a golden screenshot (keyed by [id]),
 ///   • a user-doc entry (its [narrative] + screenshot),
 ///   • an agentic-support knowledge unit ([narrative] + [shows] + screenshot).
-/// Add personas × states here as the app grows; every consumer picks them up.
+///
+/// The scenarios are NOT written here — they're loaded from the language-neutral
+/// `voice-kit/fixtures/scenarios.json`, the SAME file the TypeScript port reads,
+/// so both ports render the same stories and a divergence is a failing test, not
+/// a review catch. Add personas × states in the JSON; every consumer picks them up.
 class Scenario {
   const Scenario({
     required this.id,
@@ -54,89 +61,49 @@ class Scenario {
 class Scenarios {
   Scenarios._();
 
-  static final DateTime _t = DateTime.utc(2026, 9, 4, 14, 0);
-  static DateTime _at(int min) => _t.add(Duration(minutes: min));
+  /// Every scenario — the source every consumer iterates (goldens, docs, KB) —
+  /// loaded from the shared JSON fixture (see class doc).
+  static final List<Scenario> all = _load();
 
-  /// A repeat customer chasing a weekend callout — the classic case: an inbound
-  /// question, an agent reply awaiting the operator's yes, and a private advisor
-  /// nudge. Exercises every trust boundary at once.
-  static final Scenario weekendCallout = Scenario(
-    id: 'weekend_callout',
-    title: 'Weekend emergency callout',
-    feature: 'Inbox · approving an agent draft',
-    narrative:
-        "A repeat customer texts asking about a weekend emergency callout. The "
-        "conversation stays in one thread across text and a missed call. When "
-        "things turn urgent, Nuntilo drafts a reply on your behalf and holds it "
-        "for your approval — nothing goes to the customer until you say yes. "
-        "Alongside it, privately, the advisor points out this person has reached "
-        "out three times this week and suggests a personal call to close it.",
-    shows: const [
-      'A single thread carries text and calls together (one conversation).',
-      'The agent can draft a customer reply, but it waits for your approval '
-          '(the "Draft reply · needs your yes" card) — it is never sent on its own.',
-      'The advisor speaks privately in-thread ("Only you see this") and can '
-          'never be sent to the customer.',
-    ],
-    route: '/inbox',
-    breadcrumb: 'Inbox › a customer thread',
-    messages: [
-      Message(
-        id: 's1',
-        author: MessageAuthor.contact,
-        state: MessageState.sent,
-        channel: MessageChannel.sms,
-        text: 'Hi — do you do emergency callouts on weekends? My kitchen sink '
-            'is backing up badly.',
-        createdAt: _at(0),
-      ),
-      Message(
-        id: 's2',
-        author: MessageAuthor.operator,
-        state: MessageState.sent,
-        channel: MessageChannel.sms,
-        text: 'Hey! Yes we do — is this an emergency or can it wait to Monday?',
-        createdAt: _at(2),
-      ),
-      Message(
-        id: 's3',
-        author: MessageAuthor.contact,
-        state: MessageState.sent,
-        channel: MessageChannel.sms,
-        text: "It's getting worse, water's near the top now.",
-        createdAt: _at(9),
-      ),
-      Message(
-        id: 's4',
-        author: MessageAuthor.system,
-        state: MessageState.internal,
-        channel: MessageChannel.voice,
-        text: 'Missed call · 21s · 2:14 PM',
-        createdAt: _at(14),
-      ),
-      Message(
-        id: 's5',
-        author: MessageAuthor.agentPublic,
-        state: MessageState.pendingApproval,
-        channel: MessageChannel.sms,
-        text: "That sounds urgent — I can get someone out this afternoon "
-            "between 3 and 5. Our weekend emergency rate is \$180 callout. "
-            "Want me to book it?",
-        createdAt: _at(15),
-      ),
-      Message(
-        id: 's6',
-        author: MessageAuthor.agentAdvisor,
-        state: MessageState.internal,
-        channel: MessageChannel.none,
-        text: "This is the third time this customer's reached out this week — "
-            "they've been patient. Worth a quick personal call to close it.",
-        actions: const [MessageAction.dismiss],
-        createdAt: _at(15),
-      ),
-    ],
-  );
+  /// The shared fixture lives at the repo root; `flutter test` runs with the
+  /// package directory as its working directory.
+  static String get _fixturePath =>
+      '${Directory.current.path}/../../../fixtures/scenarios.json';
 
-  /// Every scenario — the source every consumer iterates (goldens, docs, KB).
-  static final List<Scenario> all = [weekendCallout];
+  static List<Scenario> _load() {
+    final json = jsonDecode(File(_fixturePath).readAsStringSync())
+        as Map<String, dynamic>;
+    return (json['scenarios'] as List)
+        .cast<Map<String, dynamic>>()
+        .map(_scenario)
+        .toList();
+  }
+
+  static Scenario _scenario(Map<String, dynamic> j) => Scenario(
+        id: j['id'] as String,
+        title: j['title'] as String,
+        feature: j['feature'] as String,
+        narrative: j['narrative'] as String,
+        route: j['route'] as String,
+        breadcrumb: j['breadcrumb'] as String,
+        shows: (j['shows'] as List).cast<String>(),
+        messages: (j['messages'] as List)
+            .cast<Map<String, dynamic>>()
+            .map(_message)
+            .toList(),
+      );
+
+  static Message _message(Map<String, dynamic> m) => Message(
+        id: m['id'] as String,
+        author: MessageAuthor.values.byName(m['author'] as String),
+        state: MessageState.values.byName(m['state'] as String),
+        channel: MessageChannel.values.byName(m['channel'] as String),
+        text: m['text'] as String?,
+        actions: ((m['actions'] as List?) ?? const [])
+            .cast<String>()
+            .map(MessageAction.values.byName)
+            .toList(),
+        createdAt:
+            m['createdAt'] != null ? DateTime.parse(m['createdAt'] as String) : null,
+      );
 }

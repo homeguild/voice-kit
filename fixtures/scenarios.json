@@ -1,0 +1,69 @@
+{
+  "$comment": "The language-neutral scenario fixtures — the shared spine of the test/doc pipeline. Both ports (Flutter golden_toolkit, TS Playwright/vitest) build their Message list from THIS file, so the two render the same stories and drift is a failing test, not a review catch. Timestamps are fixed (frozen clock) for deterministic ordering and goldens. Authors/states/channels use the kit's Message vocabulary verbatim. See docs/scenario-driven-development.",
+  "scenarios": [
+    {
+      "id": "weekend_callout",
+      "title": "Weekend emergency callout",
+      "feature": "Inbox · approving an agent draft",
+      "route": "/inbox",
+      "breadcrumb": "Inbox › a customer thread",
+      "narrative": "A repeat customer texts asking about a weekend emergency callout. The conversation stays in one thread across text and a missed call. When things turn urgent, Nuntilo drafts a reply on your behalf and holds it for your approval — nothing goes to the customer until you say yes. Alongside it, privately, the advisor points out this person has reached out three times this week and suggests a personal call to close it.",
+      "shows": [
+        "A single thread carries text and calls together (one conversation).",
+        "The agent can draft a customer reply, but it waits for your approval (the \"Draft reply · needs your yes\" card) — it is never sent on its own.",
+        "The advisor speaks privately in-thread (\"Only you see this\") and can never be sent to the customer."
+      ],
+      "messages": [
+        {
+          "id": "s1",
+          "author": "contact",
+          "state": "sent",
+          "channel": "sms",
+          "text": "Hi — do you do emergency callouts on weekends? My kitchen sink is backing up badly.",
+          "createdAt": "2026-09-04T14:00:00Z"
+        },
+        {
+          "id": "s2",
+          "author": "operator",
+          "state": "sent",
+          "channel": "sms",
+          "text": "Hey! Yes we do — is this an emergency or can it wait to Monday?",
+          "createdAt": "2026-09-04T14:02:00Z"
+        },
+        {
+          "id": "s3",
+          "author": "contact",
+          "state": "sent",
+          "channel": "sms",
+          "text": "It's getting worse, water's near the top now.",
+          "createdAt": "2026-09-04T14:09:00Z"
+        },
+        {
+          "id": "s4",
+          "author": "system",
+          "state": "internal",
+          "channel": "voice",
+          "text": "Missed call · 21s · 2:14 PM",
+          "createdAt": "2026-09-04T14:14:00Z"
+        },
+        {
+          "id": "s5",
+          "author": "agentPublic",
+          "state": "pendingApproval",
+          "channel": "sms",
+          "text": "That sounds urgent — I can get someone out this afternoon between 3 and 5. Our weekend emergency rate is $180 callout. Want me to book it?",
+          "createdAt": "2026-09-04T14:15:00Z"
+        },
+        {
+          "id": "s6",
+          "author": "agentAdvisor",
+          "state": "internal",
+          "channel": "none",
+          "text": "This is the third time this customer's reached out this week — they've been patient. Worth a quick personal call to close it.",
+          "actions": ["dismiss"],
+          "createdAt": "2026-09-04T14:15:00Z"
+        }
+      ]
+    }
+  ]
+}
