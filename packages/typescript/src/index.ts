@@ -20,3 +20,19 @@ export {
   type MessageCaptionBuilder,
 } from "./conversation-stream";
 
+export {
+  type Directive,
+  type DirectiveTarget,
+} from "./directive";
+
+export {
+  applyDirective,
+  dismissPanel,
+  appendMessage,
+  emptyShell,
+  type ShellState,
+  type PanelSlot,
+} from "./shell";
+
+export { PanelSurface, type PanelSurfaceProps } from "./panel-surface";
+
