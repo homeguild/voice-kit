@@ -12,11 +12,21 @@
   "files": [
     "src"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/homeguild/voice-kit.git",
+    "directory": "packages/typescript"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "test:visual": "tsx visual/generate.ts && playwright test",
     "test:visual:update": "tsx visual/generate.ts && playwright test --update-snapshots",
+    "prepublishOnly": "npm run typecheck && npm test",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
