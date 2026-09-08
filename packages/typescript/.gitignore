@@ -1,0 +1,5 @@
+# Playwright visual goldens — generated pages + run artifacts (baselines under
+# *-snapshots/ ARE committed).
+visual/gen/
+test-results/
+playwright-report/
