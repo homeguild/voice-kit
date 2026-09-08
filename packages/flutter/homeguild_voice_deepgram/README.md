@@ -44,4 +44,4 @@ final manager = VoiceConversationManager(
 
 ## License
 
-MIT — see [LICENSE](https://github.com/homeguild/voice-kit/blob/main/LICENSE).
+Proprietary — © 2026 HomeGuild Labs. All rights reserved. Not open source.

@@ -260,7 +260,8 @@ final tts = OpenAITTSProvider(
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Proprietary and confidential. © 2026 HomeGuild Labs. All rights reserved — see
+[LICENSE](LICENSE). Not open source; do not distribute.
 
 ---
 
