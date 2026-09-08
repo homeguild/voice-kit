@@ -19,6 +19,10 @@ export 'src/models/voice_conversation_state.dart';
 // Conversation surface (docs/conversation-surface.md)
 export 'src/conversation/message.dart';
 
+// Agent shell — stream + panel (docs/agent-shell.md)
+export 'src/conversation/directive.dart';
+export 'src/conversation/shell.dart';
+
 // Orchestration
 export 'src/voice_conversation_manager.dart';
 
@@ -27,3 +31,4 @@ export 'widgets/voice_input_button.dart';
 export 'widgets/voice_status_indicator.dart';
 export 'widgets/voice_transcript_display.dart';
 export 'widgets/conversation_stream.dart';
+export 'widgets/panel_surface.dart';
