@@ -1,0 +1,392 @@
+// GENERATED from voice-kit/fixtures/agent-cassettes.json by scripts/gen-cassettes.mjs.
+// Do NOT edit — run `npm run gen:cassettes`. The JSON is the source of truth.
+import type { AgentCassette } from "./agent-frames";
+
+export const CASSETTES: AgentCassette[] = [
+  {
+    "id": "narrative",
+    "title": "Plain spoken reply",
+    "returnState": "narrative",
+    "userMessage": "what's my day look like?",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "You've got "
+      },
+      {
+        "type": "narrative",
+        "text": "two threads waiting "
+      },
+      {
+        "type": "narrative",
+        "text": "and four missed calls "
+      },
+      {
+        "type": "narrative",
+        "text": "to follow up on."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  },
+  {
+    "id": "notify",
+    "title": "Toast, no view",
+    "returnState": "notify",
+    "userMessage": "mark the Alvarez thread as handled",
+    "frames": [
+      {
+        "type": "progress",
+        "message": "notify…"
+      },
+      {
+        "type": "directive",
+        "directive": "notify",
+        "message": "Marked the Alvarez thread as handled.",
+        "severity": "success"
+      },
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Done — I've marked it handled."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  },
+  {
+    "id": "form",
+    "title": "Onboarding checklist in the panel",
+    "returnState": "form",
+    "opening": "You have 2 threads waiting and 4 missed calls to follow up.",
+    "userMessage": "help me get set up",
+    "frames": [
+      {
+        "type": "directive",
+        "directive": "show_view",
+        "view_id": "form",
+        "window_id": "form_golden",
+        "target": "panel",
+        "data": {
+          "title": "Setup Checklist",
+          "submitLabel": "Complete Setup",
+          "fields": [
+            {
+              "key": "step1",
+              "label": "Configure your public receptionist",
+              "inputType": "text",
+              "required": true
+            },
+            {
+              "key": "step2",
+              "label": "Set up phone lines",
+              "inputType": "text",
+              "required": true
+            },
+            {
+              "key": "step3",
+              "label": "Customize greeting messages",
+              "inputType": "text",
+              "required": true
+            },
+            {
+              "key": "step4",
+              "label": "Test your setup",
+              "inputType": "text",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "placement": "auto",
+          "size": "medium"
+        }
+      },
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "I've set up a checklist for your configuration in the side panel. "
+      },
+      {
+        "type": "narrative",
+        "text": "Fill it out to get started."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ],
+    "branches": {
+      "submitted": "form_ack"
+    }
+  },
+  {
+    "id": "confirmation",
+    "title": "Yes / no confirmation",
+    "returnState": "confirmation",
+    "userMessage": "delete the draft to Priya",
+    "frames": [
+      {
+        "type": "directive",
+        "directive": "show_view",
+        "view_id": "confirmation",
+        "window_id": "confirm_del",
+        "target": "inline",
+        "data": {
+          "title": "Discard this draft?",
+          "body": "The drafted reply to Priya will be permanently discarded.",
+          "confirmLabel": "Discard",
+          "cancelLabel": "Keep it",
+          "tone": "danger"
+        }
+      },
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Just to confirm before I discard it."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ],
+    "branches": {
+      "confirmed": "confirmation_ack",
+      "cancelled": "confirmation_declined"
+    }
+  },
+  {
+    "id": "selection_list",
+    "title": "Pick one from a list",
+    "returnState": "selection_list",
+    "userMessage": "which slot should I offer the Reyes job?",
+    "frames": [
+      {
+        "type": "directive",
+        "directive": "show_view",
+        "view_id": "selection_list",
+        "window_id": "sel_slot",
+        "target": "inline",
+        "data": {
+          "title": "Offer which time?",
+          "multi": false,
+          "submitLabel": "Offer slot",
+          "options": [
+            {
+              "id": "thu_am",
+              "label": "Thursday 9:00 AM"
+            },
+            {
+              "id": "thu_pm",
+              "label": "Thursday 2:00 PM"
+            },
+            {
+              "id": "fri_am",
+              "label": "Friday 8:30 AM"
+            }
+          ]
+        }
+      },
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Here are the open slots — pick one and I'll offer it."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ],
+    "branches": {
+      "submitted": "selection_ack"
+    }
+  },
+  {
+    "id": "narrative_then_form",
+    "title": "Prose then a form, one turn",
+    "returnState": "composite",
+    "userMessage": "let's finish onboarding",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Great — one more step and you're live. "
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "directive",
+        "directive": "show_view",
+        "view_id": "form",
+        "window_id": "form_biz",
+        "target": "panel",
+        "data": {
+          "title": "Business details",
+          "submitLabel": "Save",
+          "fields": [
+            {
+              "key": "name",
+              "label": "Business name",
+              "inputType": "text",
+              "required": true
+            },
+            {
+              "key": "email",
+              "label": "Contact email",
+              "inputType": "email",
+              "required": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ],
+    "branches": {
+      "submitted": "form_ack"
+    }
+  },
+  {
+    "id": "error",
+    "title": "Agent error frame",
+    "returnState": "error",
+    "userMessage": "pull up last quarter's revenue",
+    "frames": [
+      {
+        "type": "progress",
+        "message": "query_revenue…"
+      },
+      {
+        "type": "error",
+        "message": "Sorry — something went wrong. Please try again."
+      }
+    ]
+  },
+  {
+    "id": "form_ack",
+    "title": "Acknowledge a submitted form",
+    "returnState": "narrative",
+    "userMessage": "",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Great job! You've completed the setup. "
+      },
+      {
+        "type": "narrative",
+        "text": "Let's shape your receptionist next."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  },
+  {
+    "id": "confirmation_ack",
+    "title": "Acknowledge a confirmed action",
+    "returnState": "narrative",
+    "userMessage": "",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Done — the draft is discarded."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  },
+  {
+    "id": "confirmation_declined",
+    "title": "Acknowledge a cancelled action",
+    "returnState": "narrative",
+    "userMessage": "",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Kept it — nothing was discarded."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  },
+  {
+    "id": "selection_ack",
+    "title": "Acknowledge a selection",
+    "returnState": "narrative",
+    "userMessage": "",
+    "frames": [
+      {
+        "type": "narrative_start"
+      },
+      {
+        "type": "narrative",
+        "text": "Offered it — I'll let you know when they reply."
+      },
+      {
+        "type": "narrative_end"
+      },
+      {
+        "type": "done",
+        "data": {}
+      }
+    ]
+  }
+];

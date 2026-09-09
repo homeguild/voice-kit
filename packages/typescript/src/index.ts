@@ -45,3 +45,13 @@ export {
   type DirectiveTargetName,
 } from "./agent-frames";
 
+export {
+  applyFrame,
+  appendUser,
+  openingTurn,
+  initialTurn,
+  type AgentTurn,
+} from "./agent-turn";
+
+export { CASSETTES, cassetteById } from "./cassettes";
+
