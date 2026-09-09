@@ -176,7 +176,7 @@ export const CASSETTES: AgentCassette[] = [
       }
     ],
     "branches": {
-      "confirmed": "confirmation_ack",
+      "submitted": "confirmation_ack",
       "cancelled": "confirmation_declined"
     }
   },

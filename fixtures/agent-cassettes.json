@@ -1,5 +1,5 @@
 {
-  "$comment": "The language-neutral AGENT CASSETTES — the shared spine of journey testing (docs/journey-testing.md, axis 3). One canonical, frozen cassette per agentic RETURN STATE. Both ports (TS + Flutter) load THIS file, so a mock replay and the real transport emit identical frames and neither port can drift. The frame envelope (Sophia's SSE, services/sophia/sophia/streaming.py): progress | narrative_start | narrative | narrative_end | directive | done | error. A `directive` is either show_view {view_id, window_id, target: inline|panel, data, options} or notify {message, severity}. `branches` maps a view_event's event_type (submitted|cancelled|confirmed|<optionId>) to the next cassette id — that's how a scripted, branching conversation stays deterministic. Cassettes are recorded once from real Sophia then frozen; a contract test diffs frame SHAPES (not content) against the live agent so this can't rot.",
+  "$comment": "The language-neutral AGENT CASSETTES — the shared spine of journey testing (docs/journey-testing.md, axis 3). One canonical, frozen cassette per agentic RETURN STATE. Both ports (TS + Flutter) load THIS file, so a mock replay and the real transport emit identical frames and neither port can drift. The frame envelope (Sophia's SSE, services/sophia/sophia/streaming.py): progress | narrative_start | narrative | narrative_end | directive | done | error. A `directive` is either show_view {view_id, window_id, target: inline|panel, data, options} or notify {message, severity}. `branches` maps a view_event's event_type to the next cassette id — that's how a scripted, branching conversation stays deterministic. The event_type vocabulary is STANDARDIZED: always `submitted` or `cancelled`; the specifics ride in the payload (a confirmation sends {confirmed:true}, a selection sends the chosen ids, a form sends its values). Sophia's /event route only distinguishes cancelled vs submitted. Cassettes are recorded once from real Sophia then frozen; a contract test diffs frame SHAPES (not content) against the live agent so this can't rot.",
   "cassettes": [
     {
       "id": "narrative",
@@ -66,7 +66,7 @@
         { "type": "narrative_end" },
         { "type": "done", "data": {} }
       ],
-      "branches": { "confirmed": "confirmation_ack", "cancelled": "confirmation_declined" }
+      "branches": { "submitted": "confirmation_ack", "cancelled": "confirmation_declined" }
     },
     {
       "id": "selection_list",
