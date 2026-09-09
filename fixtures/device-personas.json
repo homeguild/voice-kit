@@ -1,0 +1,10 @@
+{
+  "$comment": "The language-neutral DEVICE PERSONAS — journey-testing axis 2 (docs/journey-testing.md). Pre-account, per-device state both ports seed so a journey that branches on it (new install vs returning) is deterministic. Times are RELATIVE (firstOpenDaysAgo) so the fixture is stable; resolvePersona anchors them against a frozen clock at seed time. The persona DEFINITIONS are shared (this file); the injector differs per port (localStorage via addInitScript on web, SharedPreferences.setMockInitialValues on Flutter).",
+  "personas": [
+    { "id": "fresh_install", "title": "Brand-new install, never opened", "state": {} },
+    { "id": "returning_unauth", "title": "Returning, not signed in — 3 opens over 5 days", "state": { "appOpenCount": 3, "firstOpenDaysAgo": 5, "lastSeenDaysAgo": 0 } },
+    { "id": "waitlisted", "title": "Joined the waitlist, one prior open", "state": { "appOpenCount": 1, "firstOpenDaysAgo": 2, "lastSeenDaysAgo": 2, "waitlistState": "joined" } },
+    { "id": "onboarding_midway", "title": "Mid-onboarding — step 2 of the setup", "state": { "appOpenCount": 4, "firstOpenDaysAgo": 1, "lastSeenDaysAgo": 0, "onboardingStep": 2 } },
+    { "id": "lapsed", "title": "Long-time device, gone quiet 30 days", "state": { "appOpenCount": 12, "firstOpenDaysAgo": 90, "lastSeenDaysAgo": 30 } }
+  ]
+}

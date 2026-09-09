@@ -55,3 +55,16 @@ export {
 
 export { CASSETTES, cassetteById } from "./cassettes";
 
+export {
+  systemClock,
+  resolvePersona,
+  daysSinceInstall,
+  isFreshInstall,
+  NEW_INSTALL,
+  type Clock,
+  type DeviceState,
+  type DevicePersona,
+} from "./device";
+
+export { DEVICE_PERSONAS, personaById } from "./personas";
+
