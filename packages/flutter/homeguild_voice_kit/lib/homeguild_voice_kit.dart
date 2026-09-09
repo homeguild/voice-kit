@@ -29,6 +29,9 @@ export 'src/conversation/agent_frames.dart';
 // Pre-account device state — persona resolver (docs/journey-testing.md, axis 2)
 export 'src/conversation/device.dart';
 
+// Entry gate — auth × intent → surface (docs/app-state.md)
+export 'src/conversation/entry.dart';
+
 // Orchestration
 export 'src/voice_conversation_manager.dart';
 

@@ -75,3 +75,13 @@ export {
   eventCassette,
 } from "./mock-agent";
 
+export {
+  resolveEntry,
+  isPublic,
+  HOME,
+  SIGN_IN,
+  type AuthPhase,
+  type Destination,
+  type EntrySurface,
+} from "./entry";
+
