@@ -36,3 +36,12 @@ export {
 
 export { PanelSurface, type PanelSurfaceProps } from "./panel-surface";
 
+export {
+  AGENT_FRAME_TYPES,
+  validateAgentFrame,
+  type AgentFrame,
+  type AgentFrameType,
+  type AgentCassette,
+  type DirectiveTargetName,
+} from "./agent-frames";
+

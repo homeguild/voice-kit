@@ -23,6 +23,9 @@ export 'src/conversation/message.dart';
 export 'src/conversation/directive.dart';
 export 'src/conversation/shell.dart';
 
+// Agent SSE envelope — the frame contract (docs/journey-testing.md, axis 3)
+export 'src/conversation/agent_frames.dart';
+
 // Orchestration
 export 'src/voice_conversation_manager.dart';
 
