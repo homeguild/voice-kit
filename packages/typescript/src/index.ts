@@ -68,3 +68,10 @@ export {
 
 export { DEVICE_PERSONAS, personaById } from "./personas";
 
+export {
+  framesToSse,
+  cassetteToSse,
+  chatCassette,
+  eventCassette,
+} from "./mock-agent";
+
