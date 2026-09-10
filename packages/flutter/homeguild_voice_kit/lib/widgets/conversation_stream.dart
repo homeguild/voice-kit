@@ -4,13 +4,15 @@ import '../src/conversation/message.dart';
 
 /// Renders a directive view ([MessageView]) inline — the host's view registry
 /// maps `viewId` → a native widget (docs/conversation-surface.md §7).
-typedef MessageViewBuilder = Widget Function(BuildContext context, MessageView view);
+typedef MessageViewBuilder = Widget Function(
+    BuildContext context, MessageView view);
 
 /// An optional caption rendered under a message (timestamp, delivery state, …),
 /// aligned to the message's side. Return null to render none. Kept general: the
 /// kit doesn't know about "timestamps"; the host reads what it needs from the
 /// [Message] (e.g. `channelMeta['timeLabel']`).
-typedef MessageCaptionBuilder = Widget? Function(BuildContext context, Message message);
+typedef MessageCaptionBuilder = Widget? Function(
+    BuildContext context, Message message);
 
 /// Whose side the surface is rendered from — because it decides which side the
 /// **public agent** lands on. In an operator's inbox thread the agent's messages
@@ -99,6 +101,7 @@ class ConversationStream extends StatelessWidget {
     this.controller,
     this.viewpoint = ConversationViewpoint.contact,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 8),
+    this.maxContentWidth,
   });
 
   final List<Message> messages;
@@ -115,46 +118,68 @@ class ConversationStream extends StatelessWidget {
   final ConversationViewpoint viewpoint;
   final EdgeInsets padding;
 
+  /// Cap the conversation at a fixed, centered reading column on wide panes —
+  /// the chat stays legible instead of stretching edge to edge (parity with the
+  /// web shell). Null (default) = full width, so phones and existing hosts are
+  /// unaffected; the scrollbar stays at the pane edge, only the content centers.
+  final double? maxContentWidth;
+
   @override
   Widget build(BuildContext context) {
     final t = theme ?? ConversationTheme.of(context);
-    return ListView.builder(
-      controller: controller,
-      padding: padding,
-      itemCount: messages.length,
-      itemBuilder: (context, i) {
-        final m = messages[i];
-        final tile = _MessageTile(
-          message: m,
-          theme: t,
-          onAction: onAction,
-          viewRegistry: viewRegistry,
-          viewpoint: viewpoint);
-        final caption = captionBuilder?.call(context, m);
-        if (caption == null) return tile;
-        // Caption aligns to the message's side (outbound right, else left). From
-        // the operator's viewpoint the public agent is outbound too.
-        final right = m.author == MessageAuthor.operator ||
-            (m.author == MessageAuthor.agentPublic &&
-                viewpoint == ConversationViewpoint.operator);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            tile,
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Align(
-                alignment: right ? Alignment.centerRight : Alignment.centerLeft,
-                child: DefaultTextStyle(
-                  style: TextStyle(color: t.systemText, fontSize: 11),
-                  child: caption,
+    return LayoutBuilder(builder: (context, constraints) {
+      // Grow the horizontal padding to center a max-width column when the pane
+      // is wider than the cap; below it, nothing changes.
+      var effectivePadding = padding;
+      final maxW = maxContentWidth;
+      if (maxW != null &&
+          constraints.maxWidth.isFinite &&
+          constraints.maxWidth > maxW) {
+        final gutter = (constraints.maxWidth - maxW) / 2;
+        effectivePadding = padding.copyWith(
+          left: padding.left + gutter,
+          right: padding.right + gutter,
+        );
+      }
+      return ListView.builder(
+        controller: controller,
+        padding: effectivePadding,
+        itemCount: messages.length,
+        itemBuilder: (context, i) {
+          final m = messages[i];
+          final tile = _MessageTile(
+              message: m,
+              theme: t,
+              onAction: onAction,
+              viewRegistry: viewRegistry,
+              viewpoint: viewpoint);
+          final caption = captionBuilder?.call(context, m);
+          if (caption == null) return tile;
+          // Caption aligns to the message's side (outbound right, else left). From
+          // the operator's viewpoint the public agent is outbound too.
+          final right = m.author == MessageAuthor.operator ||
+              (m.author == MessageAuthor.agentPublic &&
+                  viewpoint == ConversationViewpoint.operator);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              tile,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Align(
+                  alignment:
+                      right ? Alignment.centerRight : Alignment.centerLeft,
+                  child: DefaultTextStyle(
+                    style: TextStyle(color: t.systemText, fontSize: 11),
+                    child: caption,
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        },
+      );
+    });
   }
 }
 
@@ -190,9 +215,11 @@ class _MessageTile extends StatelessWidget {
 
     switch (message.author) {
       case MessageAuthor.contact:
-        return _bubble(alignEnd: false, bg: theme.contactBubble, fg: theme.contactText);
+        return _bubble(
+            alignEnd: false, bg: theme.contactBubble, fg: theme.contactText);
       case MessageAuthor.operator:
-        return _bubble(alignEnd: true, bg: theme.operatorBubble, fg: theme.operatorText);
+        return _bubble(
+            alignEnd: true, bg: theme.operatorBubble, fg: theme.operatorText);
       case MessageAuthor.agentPublic:
         if (message.state == MessageState.pendingApproval) {
           return _draftReply(context);
@@ -211,15 +238,20 @@ class _MessageTile extends StatelessWidget {
   }
 
   // ── party bubbles ──
-  Widget _bubble({required bool alignEnd, required Color bg, required Color fg}) {
+  Widget _bubble(
+      {required bool alignEnd, required Color bg, required Color fg}) {
     if ((message.text ?? '').isEmpty) return const SizedBox.shrink();
     return Align(
       alignment: alignEnd ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: EdgeInsets.only(bottom: 10, left: alignEnd ? 48 : 0, right: alignEnd ? 0 : 48),
+        margin: EdgeInsets.only(
+            bottom: 10, left: alignEnd ? 48 : 0, right: alignEnd ? 0 : 48),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
-        child: Text(message.text!, style: (theme.baseTextStyle ?? const TextStyle()).copyWith(color: fg)),
+        decoration:
+            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+        child: Text(message.text!,
+            style:
+                (theme.baseTextStyle ?? const TextStyle()).copyWith(color: fg)),
       ),
     );
   }
@@ -277,19 +309,26 @@ class _MessageTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10, right: 24),
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         decoration: BoxDecoration(
-          border: Border(left: BorderSide(color: theme.advisorText.withValues(alpha: 0.5), width: 2)),
+          border: Border(
+              left: BorderSide(
+                  color: theme.advisorText.withValues(alpha: 0.5), width: 2)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('ONLY YOU SEE THIS',
                 style: TextStyle(
-                    color: theme.advisorText, fontSize: 10, letterSpacing: 1, fontWeight: FontWeight.w600)),
+                    color: theme.advisorText,
+                    fontSize: 10,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
             if ((message.text ?? '').isNotEmpty)
               Text(message.text!,
-                  style: (theme.baseTextStyle ?? const TextStyle())
-                      .copyWith(color: theme.advisorText, fontStyle: FontStyle.italic, height: 1.4))
+                  style: (theme.baseTextStyle ?? const TextStyle()).copyWith(
+                      color: theme.advisorText,
+                      fontStyle: FontStyle.italic,
+                      height: 1.4))
             else
               _typing(theme.advisorText),
             _actions(context),
@@ -304,10 +343,13 @@ class _MessageTile extends StatelessWidget {
   // in place reads as "this becomes that outbound message".
   Widget _draftReply(BuildContext context) {
     return Align(
-      alignment: _agentIsOutbound ? Alignment.centerRight : Alignment.centerLeft,
+      alignment:
+          _agentIsOutbound ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: EdgeInsets.only(
-            bottom: 10, right: _agentIsOutbound ? 0 : 16, left: _agentIsOutbound ? 16 : 0),
+            bottom: 10,
+            right: _agentIsOutbound ? 0 : 16,
+            left: _agentIsOutbound ? 16 : 0),
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
         decoration: BoxDecoration(
           color: theme.surface,
@@ -319,11 +361,19 @@ class _MessageTile extends StatelessWidget {
           children: [
             Text('DRAFT REPLY · NEEDS YOUR YES',
                 style: TextStyle(
-                    color: theme.systemText, fontSize: 10, letterSpacing: 1, fontWeight: FontWeight.w600)),
+                    color: theme.systemText,
+                    fontSize: 10,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
             Text(message.text ?? '',
-                style: (theme.baseTextStyle ?? const TextStyle()).copyWith(color: theme.agentText)),
-            _actions(context, fallback: const [MessageAction.approve, MessageAction.refine, MessageAction.edit]),
+                style: (theme.baseTextStyle ?? const TextStyle())
+                    .copyWith(color: theme.agentText)),
+            _actions(context, fallback: const [
+              MessageAction.approve,
+              MessageAction.refine,
+              MessageAction.edit
+            ]),
           ],
         ),
       ),
@@ -344,10 +394,13 @@ class _MessageTile extends StatelessWidget {
   Widget _typing(Color color) => Padding(
         padding: const EdgeInsets.all(4),
         child: SizedBox(
-            width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: color)),
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(strokeWidth: 2, color: color)),
       );
 
-  Widget _actions(BuildContext context, {List<MessageAction> fallback = const []}) {
+  Widget _actions(BuildContext context,
+      {List<MessageAction> fallback = const []}) {
     final actions = message.actions.isNotEmpty ? message.actions : fallback;
     if (actions.isEmpty || onAction == null) return const SizedBox.shrink();
     return Wrap(
@@ -356,7 +409,8 @@ class _MessageTile extends StatelessWidget {
         for (final a in actions)
           TextButton(
             style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap),
             onPressed: () => onAction!(message, a),
@@ -369,8 +423,10 @@ class _MessageTile extends StatelessWidget {
   Widget _fallbackView(BuildContext context, MessageView view) => Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            border: Border.all(color: theme.draftBorder), borderRadius: BorderRadius.circular(12)),
-        child: Text('[${view.viewId}]', style: TextStyle(color: theme.systemText)),
+            border: Border.all(color: theme.draftBorder),
+            borderRadius: BorderRadius.circular(12)),
+        child:
+            Text('[${view.viewId}]', style: TextStyle(color: theme.systemText)),
       );
 
   static String _label(MessageAction a) => switch (a) {
