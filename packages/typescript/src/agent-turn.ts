@@ -1,7 +1,7 @@
 import type { AgentFrame } from "./agent-frames";
 import type { Directive } from "./directive";
 import { Message } from "./message";
-import { appendMessage, applyDirective, emptyShell, type ShellState } from "./shell";
+import { appendMessage, applyDirective, dismissPanel, emptyShell, type ShellState } from "./shell";
 
 /**
  * Folding an agent's SSE stream into shell state — the SHARED reducer both ports
@@ -59,6 +59,10 @@ export function applyFrame(turn: AgentTurn, frame: AgentFrame): AgentTurn {
       return { ...turn, agentId: null };
 
     case "directive": {
+      // Retract a pinned panel view when its task is done (however it was finished).
+      if (frame.directive === "dismiss_view") {
+        return { ...turn, shell: dismissPanel(turn.shell, frame.window_id) };
+      }
       if (frame.directive !== "show_view") return turn; // notify → host toast, not the shell
       const windowId = frame.window_id;
       const directive: Directive = {

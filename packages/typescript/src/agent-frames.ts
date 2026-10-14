@@ -29,6 +29,10 @@ export type AgentFrame =
       options?: Record<string, unknown>;
     }
   | { type: "directive"; directive: "notify"; message: string; severity?: string }
+  // Retract a view the agent earlier pinned to the PANEL (by windowId) — when the task it was
+  // for is done, however the operator finished it (filled the form, or just answered in chat).
+  // No-op on inline views (conversation history). The reusable spine of multi-step panel flows.
+  | { type: "directive"; directive: "dismiss_view"; window_id: string }
   | { type: "done"; data?: Record<string, unknown> }
   | { type: "error"; message?: string };
 
@@ -87,6 +91,10 @@ export function validateAgentFrame(frame: AgentFrame): string | null {
     } else if (d === "notify") {
       if (typeof (frame as { message?: unknown }).message !== "string") {
         return "notify directive missing message";
+      }
+    } else if (d === "dismiss_view") {
+      if (typeof (frame as { window_id?: unknown }).window_id !== "string") {
+        return "dismiss_view directive missing window_id";
       }
     } else {
       return `unknown directive: ${String(d)}`;

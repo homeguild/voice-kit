@@ -84,6 +84,26 @@ describe("agent-turn reducer", () => {
     expect(t.shell.panel).toHaveLength(0);
   });
 
+  it("dismiss_view retracts the matching panel slot (the multi-step completion signal)", () => {
+    const t = run([
+      { type: "directive", directive: "show_view", view_id: "form", window_id: "voice", target: "panel", data: { title: "Voice" } },
+      { type: "directive", directive: "show_view", view_id: "checklist", window_id: "focus", target: "panel", data: { title: "Start here" } },
+      // The voice step completes (e.g. answered in chat) → the agent retracts just that form.
+      { type: "directive", directive: "dismiss_view", window_id: "voice" },
+    ]);
+    expect(t.shell.panel).toHaveLength(1);
+    expect(t.shell.panel[0]!.windowId).toBe("focus"); // the checklist stays pinned
+  });
+
+  it("dismiss_view leaves the stream untouched (inline views are history)", () => {
+    const t = run([
+      { type: "directive", directive: "show_view", view_id: "chart", window_id: "c1", target: "inline", data: {} },
+      { type: "directive", directive: "dismiss_view", window_id: "c1" },
+    ]);
+    expect(t.shell.messages).toHaveLength(1); // inline view not retracted
+    expect(t.shell.panel).toHaveLength(0);
+  });
+
   it("defaults an unknown target to inline", () => {
     // An out-of-contract target (not inline|panel) — cast past the typed union.
     const frame = { type: "directive", directive: "show_view", view_id: "x", window_id: "w", target: "sidebar", data: {} } as unknown as AgentFrame;
