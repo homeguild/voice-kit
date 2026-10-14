@@ -26,6 +26,9 @@ export 'src/conversation/shell.dart';
 // Agent SSE envelope — the frame contract (docs/journey-testing.md, axis 3)
 export 'src/conversation/agent_frames.dart';
 
+// Fold the SSE stream into shell state — the shared reducer (mirror of agent-turn.ts)
+export 'src/conversation/agent_turn.dart';
+
 // Pre-account device state — persona resolver (docs/journey-testing.md, axis 2)
 export 'src/conversation/device.dart';
 
