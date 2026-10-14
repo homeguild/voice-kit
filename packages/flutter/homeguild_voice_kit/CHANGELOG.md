@@ -1,3 +1,7 @@
+## 0.1.1
+
+- `dismiss_view` frame — retract a pinned panel view by windowId (folds to `dismissPanel`); contract parity with the TS kit.
+
 ## 0.1.0
 
 - Initial release

@@ -48,6 +48,11 @@ class AgentFrame {
         }
       } else if (directive == 'notify') {
         if (message is! String) return 'notify directive missing message';
+      } else if (directive == 'dismiss_view') {
+        // Retract a pinned PANEL view (by windowId) when its task is done — the reusable
+        // completion signal for multi-step panel flows. Folds to `dismissPanel`; no-op on
+        // inline views. Mirrors the TS kit (agent-frames.ts) dismiss_view frame.
+        if (windowId is! String) return 'dismiss_view directive missing window_id';
       } else {
         return 'unknown directive: $directive';
       }
