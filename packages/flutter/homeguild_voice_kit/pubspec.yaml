@@ -2,7 +2,7 @@ name: homeguild_voice_kit
 description: >
   Voice conversation orchestration for Flutter. Pluggable STT/TTS providers
   with a complete state machine, sentence buffering, and ready-made widgets.
-version: 0.1.2
+version: 0.1.3
 # Proprietary — never publish to pub.dev. Consumed privately (git dep) by the apps.
 publish_to: none
 homepage: https://www.homeguild.ai/labs

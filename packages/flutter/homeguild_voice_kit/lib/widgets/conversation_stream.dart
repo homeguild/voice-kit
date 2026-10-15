@@ -278,8 +278,8 @@ class _MessageTile extends StatelessWidget {
                     letterSpacing: 1,
                     fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
-            Text(message.text!,
-                style: (theme.baseTextStyle ?? const TextStyle())
+            _mdText(message.text!,
+                (theme.baseTextStyle ?? const TextStyle())
                     .copyWith(color: theme.agentText)),
           ],
         ),
@@ -294,8 +294,8 @@ class _MessageTile extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10, right: 32),
-        child: Text(message.text!,
-            style: (theme.baseTextStyle ?? const TextStyle())
+        child: _mdText(message.text!,
+            (theme.baseTextStyle ?? const TextStyle())
                 .copyWith(color: color, height: 1.45)),
       ),
     );
@@ -324,8 +324,9 @@ class _MessageTile extends StatelessWidget {
                     fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
             if ((message.text ?? '').isNotEmpty)
-              Text(message.text!,
-                  style: (theme.baseTextStyle ?? const TextStyle()).copyWith(
+              _mdText(
+                  message.text!,
+                  (theme.baseTextStyle ?? const TextStyle()).copyWith(
                       color: theme.advisorText,
                       fontStyle: FontStyle.italic,
                       height: 1.4))
@@ -366,8 +367,8 @@ class _MessageTile extends StatelessWidget {
                     letterSpacing: 1,
                     fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
-            Text(message.text ?? '',
-                style: (theme.baseTextStyle ?? const TextStyle())
+            _mdText(message.text ?? '',
+                (theme.baseTextStyle ?? const TextStyle())
                     .copyWith(color: theme.agentText)),
             _actions(context, fallback: const [
               MessageAction.approve,
@@ -443,4 +444,32 @@ class _MessageTile extends StatelessWidget {
         MessageAction.openWith => 'Open with…',
         MessageAction.takeMeThere => 'Take me there',
       };
+}
+
+/// Minimal inline markdown — **bold** and *italic* / _italic_ — so the agent's
+/// voice renders emphasis instead of leaking literal `**asterisks**` (web parity).
+/// Applied only to agent/advisor text, never the operator's own typed message.
+final _mdToken = RegExp(r'\*\*(.+?)\*\*|\*(.+?)\*|_(.+?)_');
+
+Widget _mdText(String text, TextStyle style) =>
+    Text.rich(TextSpan(style: style, children: _mdSpans(text)));
+
+List<InlineSpan> _mdSpans(String text) {
+  final spans = <InlineSpan>[];
+  var i = 0;
+  for (final m in _mdToken.allMatches(text)) {
+    if (m.start > i) spans.add(TextSpan(text: text.substring(i, m.start)));
+    if (m.group(1) != null) {
+      spans.add(TextSpan(
+          text: m.group(1),
+          style: const TextStyle(fontWeight: FontWeight.w700)));
+    } else {
+      spans.add(TextSpan(
+          text: m.group(2) ?? m.group(3),
+          style: const TextStyle(fontStyle: FontStyle.italic)));
+    }
+    i = m.end;
+  }
+  if (i < text.length) spans.add(TextSpan(text: text.substring(i)));
+  return spans;
 }

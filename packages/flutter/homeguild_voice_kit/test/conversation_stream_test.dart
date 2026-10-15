@@ -86,6 +86,21 @@ void main() {
     expect(leftCenter.dx, lessThan(width / 2), reason: 'agent line hugs the left');
   });
 
+  testWidgets('agent voice renders inline markdown (no literal asterisks)',
+      (tester) async {
+    await tester.pumpWidget(_host([
+      Message(
+          id: '5',
+          author: MessageAuthor.agentPublic,
+          state: MessageState.sent,
+          channel: MessageChannel.chat,
+          text: "I've pinned your checklist in **Your focus**."),
+    ]));
+    // The bold markers are consumed — the operator never sees literal `**`.
+    expect(find.textContaining('Your focus'), findsOneWidget);
+    expect(find.textContaining('**'), findsNothing);
+  });
+
   testWidgets('a directive view renders through the registry', (tester) async {
     await tester.pumpWidget(_host([
       Message(
